@@ -40,6 +40,8 @@ clone_cstreamer() {
     --recurse-submodules --shallow-submodules \
     -b "${CROWSNEST_CAMERA_STREAMER_REPO_BRANCH}" \
     --depth=1 --single-branch bin/camera-streamer
+    # Fix build with ffmpeg 6.x/7.x - uint8_t must be defined as const to build - works also with ffmpeg 5.x (used in debian bbookworm)
+    sed -i 's/int packet(void \*opaque, uint8_t \*buf, int buf_size)/int packet(void *opaque, const uint8_t *buf, int buf_size)/g' bin/camera-streamer/util/ffmpeg/remuxer.c
 }
 
 build_apps() {
@@ -55,3 +57,4 @@ build_apps() {
     fi
     sudo -u "${BASE_USER}" "${PWD}"/bin/build.sh --build
 }
+
